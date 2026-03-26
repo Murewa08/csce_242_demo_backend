@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Murewa08/csce_242_demo_backend#readme",
   "dependencies": {
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "mongoose": "^9.3.3"
   }
 }
