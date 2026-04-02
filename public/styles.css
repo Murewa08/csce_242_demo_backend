@@ -4,4 +4,25 @@ body {
 
 h1 {
     color: lightcoral;
+    justify-self: center;
+}
+
+h3 {
+    justify-self: center;
+}
+
+p {
+    justify-self: center;
+}
+
+main {
+    
+}
+.cards {
+    background: white;
+    border-radius: 20px;
+    width: 300px;
+    border: 2px solid lightcoral;
+    justify-self: center;
+    margin-top: 10px;
 }
