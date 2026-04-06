@@ -1,31 +1,35 @@
 body {
-    background: lightblue;
+    background:linear-gradient(45deg, #f8d7e0, white, #f8d7e0, white, #f8d7e0, white, #f8d7e0, white, #f8d7e0, white, #f8d7e0, white, #f8d7e0, white);
+    margin: 0px;
 }
 
-h1 {
-    color: lightcoral;
-    justify-self: center;
-    font-size: 20px;
+header {
+    background: pink;
+    color: #6B7A8F;
+    text-align: center;
+    margin-top: -20px;
+    padding: 15px;
 }
 
-h3 {
+h2 {
     justify-self: center;
-    font-size: 20px;
 }
 
 p {
     justify-self: center;
-    font-size: 10px;
+    color: #D3D7DD;
 }
 
-main {
-    
+a:hover {
+    color: lightcoral;
 }
+
 .cards {
-    background: white;
+    background: #F5E3F5;
     border-radius: 20px;
     width: 300px;
     border: 2px solid lightcoral;
     justify-self: center;
-    margin-top: 10px;
+    margin-top: 20px;
+    padding: 10px;
 }
