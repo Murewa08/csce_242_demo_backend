@@ -3,6 +3,7 @@ const cors = require("cors");
 const multer = require("multer");
 const app = express();
 app.use(express.static("public"));
+const Joi = require("joi");
 app.use(express.json());
 app.use(cors());
 
@@ -35,9 +36,9 @@ createMessage();*/
 /*const storage = multer.diskStorage({
   destination: (req, file, cb) => {cb(null, "./images/");},
   filename: (req, file, cb) => {cb(null, file.originalname);},
-});
+});*/
 
-const upload = multer({storage: storage});*/
+const upload = multer({storage: storage});
 
 let destinations = [
   
@@ -93,6 +94,10 @@ app.get("/api/destinations", (req,res)=>{
 app.get("/api/destinations/:id", (req, res) => {
   const destination=destinations.find((d)=>d._id===parseInt(req.params.id));
   res.send(destination);
+});
+
+app.post("api/destinations", upload.single("image"), (req, res) => {
+  console.log("In post request");
 });
 
 //listen for incoming requests
