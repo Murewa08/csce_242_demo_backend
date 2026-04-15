@@ -3,6 +3,7 @@ const cors = require("cors");
 const multer = require("multer");
 const app = express();
 app.use(express.static("public"));
+app.use("/images", express.static("public/images"));
 const Joi = require("joi");
 app.use(express.json());
 app.use(cors());
@@ -36,7 +37,7 @@ createMessage();*/
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "./images/");
+    cb(null, "./public/images/");
   },
   filename: (req, file, cb) => {
     cb(null, file.originalname);
@@ -102,13 +103,35 @@ app.get("/api/destinations/:id", (req, res) => {
   res.send(destination);
 });
 
+const destinationSchema = Joi.object({
+  name: Joi.string().min(2).required(),
+  country: Joi.string().min(2).required(),
+  short_desc: Joi.string().min(10).required()
+});
+
 app.post("/api/destinations", upload.single("image"), (req, res) => {
+
   console.log("POST Hit!");
 
   console.log("BODY:", req.body);
   console.log("FILE:", req.file);
 
-  res.send("Testing POST");
+  const { error } = destinationSchema.validate(req.body);
+
+  if (error) {
+    return res.status(400).send(error.details[0].message);
+  }
+
+  const newDestination = {
+    _id: destinations.length + 1,
+    name: req.body.name,
+    country: req.body.country,
+    short_desc: req.body.short_desc,
+    img_name: req.file ? `images/${req.file.filename}` : ""
+  };
+
+  destinations.push(newDestination);
+  res.status(200).send(newDestination);
 });
 
 //listen for incoming requests
