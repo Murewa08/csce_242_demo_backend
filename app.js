@@ -32,11 +32,17 @@ const message = new Message({
 
 createMessage();*/
 
-/*Extra code Ms. Portia said she would explain Week of April 5th */
-/*const storage = multer.diskStorage({
-  destination: (req, file, cb) => {cb(null, "./images/");},
-  filename: (req, file, cb) => {cb(null, file.originalname);},
-});*/
+
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "./images/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  },
+});
+
 
 const upload = multer({storage: storage});
 
@@ -46,42 +52,42 @@ let destinations = [
     "_id": 1,
     "name": "New York City",
     "country": "USA",
-    "img_name": "images/new-york.jpg",
+    "img_name": "images/NewYorkImage.png",
     "short_desc": "The city that never sleeps — skyline, museums, and nightlife."
   },
   {
     "_id": 2,
     "name": "Tokyo",
     "country": "Japan",
-    "img_name": "images/tokyo.jpg",
+    "img_name": "images/TokyoImage.png",
     "short_desc": "Futuristic skyline, temples, and world-class food."
   },
   {
     "_id": 3,
     "name": "Bali",
     "country": "Indonesia",
-    "img_name": "images/bali.jpg",
+    "img_name": "images/BaliImage.png",
     "short_desc": "Beaches, rice terraces, and wellness retreats."
   },
   {
     "_id": 4,
     "name": "London",
     "country": "United Kingdom",
-    "img_name": "images/london.jpg",
+    "img_name": "images/EnglandImage.webp",
     "short_desc": "History, theatre, and parks."
   },
   {
     "_id": 5,
     "name": "Bern",
     "country": "Switzerland",
-    "img_name": "images/bern.jpg",
+    "img_name": "images/SwitzerlandImage.webp",
     "short_desc": "Medieval old town and Alpine access."
   },
   {
     "_id": 6,
     "name": "Sydney",
     "country": "Australia",
-    "img_name": "images/sydney.jpg",
+    "img_name": "images/AustraliaImage.jpg",
     "short_desc": "Harbour city with beaches and great food."
   }
 
@@ -96,8 +102,13 @@ app.get("/api/destinations/:id", (req, res) => {
   res.send(destination);
 });
 
-app.post("api/destinations", upload.single("image"), (req, res) => {
-  console.log("In post request");
+app.post("/api/destinations", upload.single("image"), (req, res) => {
+  console.log("POST Hit!");
+
+  console.log("BODY:", req.body);
+  console.log("FILE:", req.file);
+
+  res.send("Testing POST");
 });
 
 //listen for incoming requests
