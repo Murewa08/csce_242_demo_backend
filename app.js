@@ -150,3 +150,28 @@ app.delete("/api/destinations/:id", (req, res) =>  {
   const deletedDestination = destinations.splice(index, 1)[0];
   res.status(200).send(deletedDestination);
 });
+
+app.put("/api/destinations/:id", upload.single("image"), (req, res) => {
+  const id = parseInt(req.params.id);
+  const destination = destinations.find((d) => d._id === id);
+
+  if(!destination) {
+    return res.status(404).send("Destination not found");
+  }
+
+  const {error} = destinationSchema.validate(req.body);
+
+  if(error) {
+    return res.status(400).send(error.details[0].message);
+  }
+
+  destination.name = req.body.name;
+  destination.country = req.body.country;
+  destination.short_desc = req.body.short_desc;
+
+  if(req.file) {
+    destination.img_name = `images/${req.file.filename}`;
+  }
+
+  res.status(200).send(destination);
+});
