@@ -138,3 +138,15 @@ app.post("/api/destinations", upload.single("image"), (req, res) => {
 app.listen(3001, ()=> {
   console.log("Server is up and running");
 });
+
+app.delete("/api/destinations/:id", (req, res) =>  {
+  const id = parseInt(req.params.id);
+  const index = destinations.findIndex((d) => d._id === id);
+
+  if(index === -1) {
+    return res.status(404).send("Destination not found");
+  }
+
+  const deletedDestination = destinations.splice(index, 1)[0];
+  res.status(200).send(deletedDestination);
+});
