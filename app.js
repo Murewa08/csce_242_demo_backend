@@ -16,11 +16,17 @@ mongoose
   .then(() => console.log("Connected to mongodb..."))
   .catch((err) => console.error("could not connect ot mongodb...", err));
 
-/* const schema = new mongoose.Schema({
+ const schema = new mongoose.Schema({
+  _id: Number,
   name: String,
+  country: String,
+  short_desc: String,
+  img_name: String
 });
 
-async function createMessage() {
+const Destination = mongoose.model("Destination", schema);
+
+/*async function createMessage() {
   const result = await message.save();
   console.log(result);
 }
@@ -48,59 +54,13 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage: storage});
 
-let destinations = [
-  
-  {
-    "_id": 1,
-    "name": "New York City",
-    "country": "USA",
-    "img_name": "images/NewYorkImage.png",
-    "short_desc": "The city that never sleeps — skyline, museums, and nightlife."
-  },
-  {
-    "_id": 2,
-    "name": "Tokyo",
-    "country": "Japan",
-    "img_name": "images/TokyoImage.png",
-    "short_desc": "Futuristic skyline, temples, and world-class food."
-  },
-  {
-    "_id": 3,
-    "name": "Bali",
-    "country": "Indonesia",
-    "img_name": "images/BaliImage.png",
-    "short_desc": "Beaches, rice terraces, and wellness retreats."
-  },
-  {
-    "_id": 4,
-    "name": "London",
-    "country": "United Kingdom",
-    "img_name": "images/EnglandImage.webp",
-    "short_desc": "History, theatre, and parks."
-  },
-  {
-    "_id": 5,
-    "name": "Bern",
-    "country": "Switzerland",
-    "img_name": "images/SwitzerlandImage.webp",
-    "short_desc": "Medieval old town and Alpine access."
-  },
-  {
-    "_id": 6,
-    "name": "Sydney",
-    "country": "Australia",
-    "img_name": "images/AustraliaImage.jpg",
-    "short_desc": "Harbour city with beaches and great food."
-  }
-
-];
-
-app.get("/api/destinations", (req,res)=>{
+app.get("/api/destinations", async (req,res)=>{
+  const destinations =  await Destination.find();
   res.send(destinations);
 });
 
-app.get("/api/destinations/:id", (req, res) => {
-  const destination=destinations.find((d)=>d._id===parseInt(req.params.id));
+app.get("/api/destinations/:id", async (req, res) => {
+  const destination=await Destination.findById(req.params.id);
   res.send(destination);
 });
 
@@ -110,7 +70,7 @@ const destinationSchema = Joi.object({
   short_desc: Joi.string().min(10).required()
 });
 
-app.post("/api/destinations", upload.single("image"), (req, res) => {
+app.post("/api/destinations", upload.single("image"), async (req, res) => {
 
   console.log("POST Hit!");
 
@@ -123,16 +83,19 @@ app.post("/api/destinations", upload.single("image"), (req, res) => {
     return res.status(400).send(error.details[0].message);
   }
 
-  const newDestination = {
-    _id: destinations.length + 1,
+  const destination = new Destination({
     name: req.body.name,
     country: req.body.country,
     short_desc: req.body.short_desc,
     img_name: req.file ? `images/${req.file.filename}` : ""
-  };
+  });
 
   destinations.push(newDestination);
   res.status(200).send(newDestination);
+
+  const newDestination = await Destination.save();
+//console.log(newDestination);
+res.status(200).send(newDestination);
 });
 
 //listen for incoming requests
@@ -152,9 +115,9 @@ app.delete("/api/destinations/:id", (req, res) =>  {
   res.status(200).send(deletedDestination);
 });
 
-app.put("/api/destinations/:id", upload.single("image"), (req, res) => {
-  const id = parseInt(req.params.id);
-  const destination = destinations.find((d) => d._id === id);
+app.put("/api/destinations/:id", upload.single("image"), async (req, res) => {
+  //const id = parseInt(req.params.id);
+  //const destination = destinations.find((d) => d._id === id);
 
   if(!destination) {
     return res.status(404).send("Destination not found");
@@ -166,13 +129,25 @@ app.put("/api/destinations/:id", upload.single("image"), (req, res) => {
     return res.status(400).send(error.details[0].message);
   }
 
-  destination.name = req.body.name;
-  destination.country = req.body.country;
-  destination.short_desc = req.body.short_desc;
+  const fieldsToUpdate = {
+    name: req.body.name,
+    country: req.body.country,
+    short_desc: req.body.short_desc
+  };
 
   if(req.file) {
-    destination.img_name = `images/${req.file.filename}`;
+    fieldsToUpdate.img_name = req.file.filename;
   }
 
+  const success = await Destination.updateOne({ _id: req.params.id }, fieldsToUpdate);
+
+  if(!success)
+  {
+    res.status(404).send("Destination not found");
+  }
+  else {
+    const destination = await Destination.findById(req.params.id);
+    res.status(200).send(Destination);
+  }
   res.status(200).send(destination);
 });
