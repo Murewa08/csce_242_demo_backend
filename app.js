@@ -1,3 +1,4 @@
+require ("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
@@ -7,16 +8,15 @@ app.use("/images", express.static("public/images"));
 const Joi = require("joi");
 app.use(express.json());
 app.use(cors());
-
-/*const mongoose = require("mongoose");
+const mongoose  = require("mongoose");
 
 //testdb is name of database, it will automatically make it
 mongoose
-  .connect("mongodb+srv://I5Ic2TtVsbGXB9y8:svQGGj9ylRElkYUX@cluster0.zg2xlbp.mongodb.net/")
+  .connect(process.env.MONGODB_URI)
   .then(() => console.log("Connected to mongodb..."))
   .catch((err) => console.error("could not connect ot mongodb...", err));
 
-const schema = new mongoose.Schema({
+/* const schema = new mongoose.Schema({
   name: String,
 });
 
@@ -32,6 +32,7 @@ const message = new Message({
 });
 
 createMessage();*/
+
 
 
 
