@@ -17,7 +17,6 @@ mongoose
   .catch((err) => console.error("could not connect ot mongodb...", err));
 
  const schema = new mongoose.Schema({
-  _id: Number,
   name: String,
   country: String,
   short_desc: String,
@@ -55,6 +54,7 @@ const storage = multer.diskStorage({
 const upload = multer({storage: storage});
 
 app.get("/api/destinations", async (req,res)=>{
+  console.log("Look at me!")
   const destinations =  await Destination.find();
   res.send(destinations);
 });
@@ -90,10 +90,7 @@ app.post("/api/destinations", upload.single("image"), async (req, res) => {
     img_name: req.file ? `images/${req.file.filename}` : ""
   });
 
-  destinations.push(newDestination);
-  res.status(200).send(newDestination);
-
-  const newDestination = await Destination.save();
+  const newDestination = await destination.save();
 //console.log(newDestination);
 res.status(200).send(newDestination);
 });
