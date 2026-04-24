@@ -100,51 +100,52 @@ app.listen(3001, ()=> {
   console.log("Server is up and running");
 });
 
-app.delete("/api/destinations/:id", (req, res) =>  {
-  const id = parseInt(req.params.id);
-  const index = destinations.findIndex((d) => d._id === id);
+app.delete("/api/destinations/:id", async (req, res) =>  {
+  try {
+    const deleted = await Destination.findByIdAndDelete(req.params.id);
 
-  if(index === -1) {
-    return res.status(404).send("Destination not found");
+    if(!deleted) {
+      return res.status(404).send("Destination not found");
+    }
+
+    res.status(200).send(deleted);
   }
-
-  const deletedDestination = destinations.splice(index, 1)[0];
-  res.status(200).send(deletedDestination);
+  catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
 });
 
 app.put("/api/destinations/:id", upload.single("image"), async (req, res) => {
   //const id = parseInt(req.params.id);
   //const destination = destinations.find((d) => d._id === id);
+  try {
+    const {error} = destinationSchema.validate(req.body);
 
-  if(!destination) {
-    return res.status(404).send("Destination not found");
+    if(error) {
+      return res.status(400).send(error.details[0].message);
+    }
+
+    const updateFields = {
+      name: req.body.name,
+      country: req.body.country,
+      short_desc: req.body.short_desc
+    };
+
+    if(req.file) {
+      updateFields.img_name = `images/${req.file.filename}`;
+    }
+
+    const updated = await Destination.findByIdAndUpdate(req.params.id, updateFields, {new: true});
+
+    if(!updated) {
+      return res.status(404).send("Destination not found");
+    }
+
+    res.status(200).send(updated);
   }
-
-  const {error} = destinationSchema.validate(req.body);
-
-  if(error) {
-    return res.status(400).send(error.details[0].message);
+  catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
   }
-
-  const fieldsToUpdate = {
-    name: req.body.name,
-    country: req.body.country,
-    short_desc: req.body.short_desc
-  };
-
-  if(req.file) {
-    fieldsToUpdate.img_name = req.file.filename;
-  }
-
-  const success = await Destination.updateOne({ _id: req.params.id }, fieldsToUpdate);
-
-  if(!success)
-  {
-    res.status(404).send("Destination not found");
-  }
-  else {
-    const destination = await Destination.findById(req.params.id);
-    res.status(200).send(Destination);
-  }
-  res.status(200).send(destination);
 });
